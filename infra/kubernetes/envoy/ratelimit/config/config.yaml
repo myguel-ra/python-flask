@@ -1,0 +1,23 @@
+apiVersion: v1
+data:
+  ratelimit-config: |-
+    domain: support-dashboard
+    descriptors:
+      - key: endpoint
+        value: /customers/search
+        rate_limit:
+          unit: minute
+          requests_per_unit: 20
+        descriptors:
+          - key: user
+            rate_limit:
+              unit: minute
+              requests_per_unit: 3
+      - key: endpoint
+        value: /transactions/search
+        rate_limit:
+          unit: minute
+          requests_per_unit: 10
+kind: ConfigMap
+metadata:
+  name: envoy-ratelimit-config

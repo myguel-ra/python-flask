@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "support"
+version = "0.1.0"
+description = ""
+authors = ["Kamal Al Marhubi <kamal@wave.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+Flask = "^2.0.1"
+requests = "^2.26.0"
+gunicorn = "^20.1.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[tool.poetry.scripts]
+devserver = 'devserver:run'
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

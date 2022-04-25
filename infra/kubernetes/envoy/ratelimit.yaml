@@ -1,0 +1,61 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: envoy-ratelimit
+  labels:
+    app: ratelimit
+    role: node
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ratelimit
+  template:
+    metadata:
+      labels:
+        app: ratelimit
+        role: node
+        tier: backend
+    spec:
+      containers:
+      - name: ratelimit
+        image: europe-west1-docker.pkg.dev/wavemm-sre-takehome-miguel/containers/ratelimit:latest
+        env:
+        - name: REDIS_URL
+          value: "redis:6379"
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 8081
+          name: grpc
+        - containerPort: 6070
+          name: debug
+        volumeMounts:
+        - mountPath: /etc/ratelimit/config
+          name: config
+      volumes:
+        - name: config
+          configMap:
+            name: envoy-ratelimit-config
+            items:
+            - key: ratelimit-config
+              path: config.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: envoy-ratelimit
+  labels:
+    app: ratelimit
+    role: node
+    tier: backend
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: ratelimit
+    role: node
+    tier: backend

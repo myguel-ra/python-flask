@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: support-dashboard-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: support-dashboard-api
+  template:
+    metadata:
+      labels:
+        app: support-dashboard-api
+    spec:
+      containers:
+      - name: support-dashboard-api
+        # If working on the go project, change the image to
+        #   europe-west1-docker.pkg.dev/wavemm-sre-takehome-miguel/containers/support-api-go
+        image: europe-west1-docker.pkg.dev/wavemm-sre-takehome-miguel/containers/support-api-python
+        args:
+        ports:
+        - containerPort: 8000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            scheme: HTTP
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            scheme: HTTP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: support-dashboard-api
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  selector:
+    app: support-dashboard-api
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 8000
+
